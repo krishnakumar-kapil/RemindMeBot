@@ -49,8 +49,12 @@ def webhook():
                     message_text = messaging_event["message"]["text"]
                     fb_message(sender_id, "received message")
                     #get the wit to do stuff
-                    #client.run_actions(session_id=sender_id, message=message_text)
+                    client.run_actions(session_id=sender_id, message=message_text)
                 if messaging_event.get("delivery"):
+                    pass
+                if messaging_event.get("optin"):
+                    pass
+                if messaging_event.get("postback"):
                     pass
     else:
         return "Recieved different event"
