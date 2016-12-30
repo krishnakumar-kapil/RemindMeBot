@@ -86,7 +86,7 @@ def fb_message(sender_id, text):
             "id": sender_id
         },
         "message": {
-            "text": message_text
+            "text": text
         }
     })
     r = requests.post("https://graph.facebook.com/v2.5/me/messages",params=params, headers=headers, data=data)
