@@ -47,12 +47,14 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]
                     # recipient id is your fb id
                     message_text = messaging_event["message"]["text"]
-
+                    fb_message("received message")
                     #get the wit to do stuff
-                    client.run_actions(session_id=sender_id, message=message_text)
+                    #client.run_actions(session_id=sender_id, message=message_text)
+                if messaging_event.get("delivery"):
+                    pass
     else:
         return "Recieved different event"
-    return None
+    return "ok", 200
 
 
 # get the value of the first appearance of that entity
@@ -67,13 +69,31 @@ def first_entity_value(entities, entity):
 
 def fb_message(sender_id, text):
     # returns the response  back to messenger
-    data = {
+    """data = {
         'recipient': {'id': sender_id},
         'message': {'text': text}
     }
     qs = 'access_token='+FB_PAGE_TOKEN
     resp = requests.post('https://graph.facebook.com/me/messages?' + qs,json=data)
     return resp.content
+    """
+    log("sending message back to {recipient}: {text}".format(recipient=sender_id, text=text))
+
+    params = {"access_token": PAGE_ACCESS_TOKEN}
+    headers = {"Content-Type": "application/json"}
+    data = json.dumps({
+        "recipient": {
+            "id": sender_id
+        },
+        "message": {
+            "text": message_text
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.5/me/messages",params=params, headers=headers, data=data)
+    if r.status_code != 200:
+        log(r.status_code)
+        log(r.text)
+
 
 def send(request, response):
     fb_id = request['session_id']
