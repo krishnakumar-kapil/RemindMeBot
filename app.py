@@ -79,7 +79,7 @@ def fb_message(sender_id, text):
     """
     log("sending message back to {recipient}: {text}".format(recipient=sender_id, text=text))
 
-    params = {"access_token": PAGE_ACCESS_TOKEN}
+    params = {"access_token": FB_PAGE_TOKEN}
     headers = {"Content-Type": "application/json"}
     data = json.dumps({
         "recipient": {
