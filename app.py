@@ -6,7 +6,16 @@ import requests
 from flask import Flask, request
 from wit import Wit
 
+"""
+TODO:
+timezone first
+based on that do the messages
+implement the messaging queues using celery
 
+
+
+
+"""
 app = Flask(__name__)
 
 WIT_TOKEN = os.environ["WIT_TOKEN"]
@@ -27,6 +36,9 @@ def webhook():
     data = request.get_json()
     log(data)
 
+    """
+    handler for event handling
+    """
     if data["object"] == "page":
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
@@ -35,6 +47,53 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]
                     # recipient id is your fb id
                     message_text = messaging_event["message"]["text"]
+
+                    #get the wit to do stuff
+                    client.run_actions(session_id=sender_id, message=message_text)
+    else:
+        return "Recieved different event"
+    return None
+
+
+# get the value of the first appearance of that entity
+def first_entity_value(entities, entity):
+    if entity not in entities:
+        return None
+    val = entities[entity][0]['value']
+    if not val:
+        return None
+    return val['value'] if isinstance(val, dict) else val
+
+
+def fb_message(sender_id, text):
+    # returns the response  back to messenger
+    data = {
+        'recipient': {'id': sender_id},
+        'message': {'text': text}
+    }
+    qs = 'access_token='+FB_PAGE_TOKEN
+    resp = requests.post('https://graph.facebook.com/me/messages?' + qs,json=data)
+    return resp.content
+
+def send(request, response):
+    fb_id = request['session_id']
+    text = response['text']
+    fb_message(fb_id, text)
+
+
+def add_reminder(request):
+    context = request['context']
+    entities = request['entities']
+    reminder = first_entity_value(entities, 'reminder')
+    reminderTime = first_entity_value(entities, 'datetime')
+    print("adding reminder")
+    if reminder and reminderTime:
+        context['reminder'] = reminder
+        context['reminderTime'] = reminderTime
+
+    return context
+
+
 
 #setup actions
 actions = {
@@ -45,3 +104,6 @@ actions = {
 # setup wit client
 client = Wit(access_token=WIT_TOKEN, actions=actions)
 
+if __name__ == '__main__':
+    #run server
+    app.run(debug=True)
