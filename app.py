@@ -93,7 +93,9 @@ def add_reminder(request):
 
     return context
 
-
+def log(message):
+    print str(message)
+    sys.stdout.flush()
 
 #setup actions
 actions = {
