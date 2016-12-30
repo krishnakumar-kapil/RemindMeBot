@@ -47,7 +47,7 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]
                     # recipient id is your fb id
                     message_text = messaging_event["message"]["text"]
-                    fb_message("received message")
+                    fb_message(sender_id, "received message")
                     #get the wit to do stuff
                     #client.run_actions(session_id=sender_id, message=message_text)
                 if messaging_event.get("delivery"):
