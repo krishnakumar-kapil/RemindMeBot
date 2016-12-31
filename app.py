@@ -49,7 +49,11 @@ def webhook():
                     message_text = messaging_event["message"]["text"]
                     fb_message(sender_id, "received message")
                     #get the wit to do stuff
-                    client.run_actions(session_id=sender_id, message=message_text)
+                    #client.run_actions(session_id=sender_id, message=message_text)
+                    if("remind" in message_text):
+                        fb_message(sender_id, "you want a reminder?")
+                    else:
+                        fb_message(sender_id, "not a reminder")
                 if messaging_event.get("delivery"):
                     pass
                 if messaging_event.get("optin"):
@@ -73,14 +77,6 @@ def first_entity_value(entities, entity):
 
 def fb_message(sender_id, text):
     # returns the response  back to messenger
-    """data = {
-        'recipient': {'id': sender_id},
-        'message': {'text': text}
-    }
-    qs = 'access_token='+FB_PAGE_TOKEN
-    resp = requests.post('https://graph.facebook.com/me/messages?' + qs,json=data)
-    return resp.content
-    """
     log("sending message back to {recipient}: {text}".format(recipient=sender_id, text=text))
 
     params = {"access_token": FB_PAGE_TOKEN}
