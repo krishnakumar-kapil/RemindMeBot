@@ -133,7 +133,7 @@ def add_reminder(request):
         log("some messed up case")
     """
     if reminder_time:
-        context['reminderTime'] = reminder_time
+        context['reminderTime'] = str(reminder_time)
         delete_missing(context, 'missingTime')
     else:
         context['missingTime'] = True
