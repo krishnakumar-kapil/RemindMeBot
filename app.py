@@ -100,17 +100,35 @@ def send(request, response):
     text = response['text']
     fb_message(fb_id, "wit: "+ text)
 
+def delete_missing(context, entity):
+    if context[entity] is not None:
+        del context[entity]
 
 def add_reminder(request):
     context = request['context']
     entities = request['entities']
-    reminder = first_entity_value(entities, 'reminder')
-    reminderTime = first_entity_value(entities, 'datetime')
-    print("adding reminder")
-    if reminder and reminderTime:
-        context['reminder'] = reminder
-        context['reminderTime'] = reminderTime
-
+    reminder_str = first_entity_value(entities, "reminder")
+    reminder_time = first_entity_value(entities, "datetime")
+    log("reminder_str: " + reminder_str)
+    log("reminder_time: " + reminder_time)
+    if reminder_str and reminder_time:
+        # both were provided by the user
+        context['reminderStr'] = reminder_str
+        context['reminderTime'] = reminder_time
+        delete_missing(context, 'missingTime')
+        delete_missing(context, 'missingReminderStr')
+    elif reminder_str and not reminder_time:
+        context['missingTime'] = True
+        context['reminderStr'] = reminder_str
+        delete_missing(context, 'reminderTime')
+        delete_missing(context, 'missingReminderStr')
+    elif reminder_time and not reminder_str:
+        context['missingReminderStr'] = True
+        context['reminderTime'] = reminder_time
+        delete_missing(context, 'missingTime')
+        delete_missing(context, 'reminderStr')
+    else:
+        log("some messed up case")
     return context
 
 def log(message):
