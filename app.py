@@ -137,6 +137,14 @@ def add_reminder(request):
     else:
         context['missingTime'] = True
         delete_missing(context, 'reminderTime')
+
+    if reminder_str:
+        context['reminderStr'] = reminder_str
+        delete_missing(context, 'missingReminderStr')
+    else:
+        context['missingReminderStr'] = True
+        delete_missing(context, 'reminderStr')
+
     return context
 
 def log(message):
