@@ -108,6 +108,7 @@ def delete_missing(context, entity):
 def add_reminder(request):
     context = request['context']
     entities = request['entities']
+    context['timezone'] = "Asia/Mumbai"
     reminder_str = first_entity_value(entities, "reminder")
     reminder_time = first_entity_value(entities, "datetime")
     log("reminder_str: " + reminder_str)
