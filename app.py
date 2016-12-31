@@ -102,7 +102,7 @@ def send(request, response):
     fb_message(fb_id, "wit: "+ text)
 
 def delete_missing(context, entity):
-    if context[entity] is not None:
+    if context.get(entity) is not None:
         del context[entity]
 
 def add_reminder(request):
