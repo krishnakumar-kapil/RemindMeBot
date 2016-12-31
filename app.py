@@ -49,11 +49,11 @@ def webhook():
                     message_text = messaging_event["message"]["text"]
                     fb_message(sender_id, "received message")
                     #get the wit to do stuff
-                    #client.run_actions(session_id=sender_id, message=message_text)
                     if("remind" in message_text):
                         fb_message(sender_id, "you want a reminder?")
                     else:
                         fb_message(sender_id, "not a reminder")
+                    client.run_actions(session_id=sender_id, message=message_text)
                 if messaging_event.get("delivery"):
                     pass
                 if messaging_event.get("optin"):
@@ -98,7 +98,7 @@ def fb_message(sender_id, text):
 def send(request, response):
     fb_id = request['session_id']
     text = response['text']
-    fb_message(fb_id, text)
+    fb_message(fb_id, "wit: "+ text)
 
 
 def add_reminder(request):
