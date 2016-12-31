@@ -34,7 +34,7 @@ def verify():
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
-    log(data)
+    #log(data)
 
     """
     handler for event handling
@@ -48,6 +48,7 @@ def webhook():
                     # recipient id is your fb id
                     message_text = messaging_event["message"]["text"]
                     fb_message(sender_id, "received message")
+                    log("message_text_received: "+message_text);
                     #get the wit to do stuff
                     if("remind" in message_text):
                         fb_message(sender_id, "you want a reminder?")
@@ -111,7 +112,7 @@ def add_reminder(request):
     reminder_time = first_entity_value(entities, "datetime")
     log("reminder_str: " + reminder_str)
     log("reminder_time: " + reminder_time)
-    if reminder_str and reminder_time:
+    """if reminder_str and reminder_time:
         # both were provided by the user
         context['reminderStr'] = reminder_str
         context['reminderTime'] = reminder_time
@@ -129,6 +130,13 @@ def add_reminder(request):
         delete_missing(context, 'reminderStr')
     else:
         log("some messed up case")
+    """
+    if reminder_time:
+        context['reminderTime'] = reminder_time
+        delete_missing(context, 'missingTime')
+    else:
+        context['missingTime'] = True
+        delete_missing(context, 'reminderTime')
     return context
 
 def log(message):
