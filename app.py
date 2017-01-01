@@ -1,6 +1,11 @@
 import os
 import sys
 import json
+#import tz
+from redis import Redis
+#from rq_scheduler import Scheduler
+from datetime import datetime
+from rq import Queue
 
 import requests
 from flask import Flask, request
@@ -11,7 +16,7 @@ TODO:
 timezone first
 based on that do the messages
 implement the messaging queues using celery
-
+use rq instead
 
 
 
@@ -105,33 +110,20 @@ def delete_missing(context, entity):
     if context.get(entity) is not None:
         del context[entity]
 
+def send_reminder(sender_id, reminder_message, delta_time):
+    sleep(delta_time)
+    fb_message(sender_id, "reminder: "+reminder_message)
+
+
 def add_reminder(request):
     context = request['context']
     entities = request['entities']
+    fb_id = request['session_id']
     context['timezone'] = "Asia/Kolkata"
     reminder_str = first_entity_value(entities, "reminder")
     reminder_time = first_entity_value(entities, "datetime")
     log("reminder_str: " + reminder_str)
     log("reminder_time: " + reminder_time)
-    """if reminder_str and reminder_time:
-        # both were provided by the user
-        context['reminderStr'] = reminder_str
-        context['reminderTime'] = reminder_time
-        delete_missing(context, 'missingTime')
-        delete_missing(context, 'missingReminderStr')
-    elif reminder_str and not reminder_time:
-        context['missingTime'] = True
-        context['reminderStr'] = reminder_str
-        delete_missing(context, 'reminderTime')
-        delete_missing(context, 'missingReminderStr')
-    elif reminder_time and not reminder_str:
-        context['missingReminderStr'] = True
-        context['reminderTime'] = reminder_time
-        delete_missing(context, 'missingTime')
-        delete_missing(context, 'reminderStr')
-    else:
-        log("some messed up case")
-    """
     if reminder_time:
         context['reminderTime'] = str(reminder_time)
         delete_missing(context, 'missingTime')
@@ -145,7 +137,13 @@ def add_reminder(request):
     else:
         context['missingReminderStr'] = True
         delete_missing(context, 'reminderStr')
-
+    
+    if reminder_time and reminder_str:
+        # 2016-12-31T08:12:00.000-08:00
+        date_time = datetime.strptime(reminder_time, "%Y-%m-%dT%H:%M:%S.%f")
+        current_time = datetime.datetime.now()
+        delta_time = (date_time - current_time).total_seconds()
+        job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
     return context
 
 def log(message):
@@ -160,6 +158,10 @@ actions = {
 
 # setup wit client
 client = Wit(access_token=WIT_TOKEN, actions=actions)
+redis_conn = Redis()
+q = Queue(connection=redis_conn)
+
+#scheduler = Scheduler(connection=Redis())
 
 if __name__ == '__main__':
     #run server
