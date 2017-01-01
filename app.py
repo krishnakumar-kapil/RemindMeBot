@@ -140,9 +140,10 @@ def add_reminder(request):
     
     if reminder_time and reminder_str:
         # 2016-12-31T08:12:00.000-08:00
-        date_time = datetime.strptime(reminder_time, "%Y-%m-%dT%H:%M:%S.%f")
-        current_time = datetime.datetime.now()
-        delta_time = (date_time - current_time).total_seconds()
+        #date_time = datetime.strptime(reminder_time, "%Y-%m-%dT%H:%M:%S.%f")
+        #current_time = datetime.datetime.now()
+        #delta_time = (date_time - current_time).total_seconds()
+        delta_time = 60
         job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
     return context
 
