@@ -144,7 +144,7 @@ def add_reminder(request):
         #current_time = datetime.datetime.now()
         #delta_time = (date_time - current_time).total_seconds()
         delta_time = 60
-        job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
+        #job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
     return context
 
 def log(message):
@@ -159,8 +159,8 @@ actions = {
 
 # setup wit client
 client = Wit(access_token=WIT_TOKEN, actions=actions)
-redis_conn = Redis()
-q = Queue(connection=redis_conn)
+#redis_conn = Redis()
+#q = Queue(connection=redis_conn)
 
 #scheduler = Scheduler(connection=Redis())
 
