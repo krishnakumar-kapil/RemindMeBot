@@ -1,0 +1,66 @@
+from wit import Wit
+import os
+
+
+def send(request, response):
+    fb_id = request['session_id']
+    text = response['text']
+    fb_message(fb_id, "wit: "+ text)
+
+def add_reminder(request):
+    context = request['context']
+    entities = request['entities']
+    fb_id = request['session_id']
+    context['timezone'] = "Asia/Kolkata"
+    reminder_str = first_entity_value(entities, "reminder")
+    reminder_time = first_entity_value(entities, "datetime")
+    log("reminder_str: " + reminder_str)
+    log("reminder_time: " + reminder_time)
+    if reminder_time:
+        context['reminderTime'] = str(reminder_time)
+        delete_missing(context, 'missingTime')
+    else:
+        context['missingTime'] = True
+        delete_missing(context, 'reminderTime')
+
+    if reminder_str:
+        context['reminderStr'] = reminder_str
+        delete_missing(context, 'missingReminderStr')
+    else:
+        context['missingReminderStr'] = True
+        delete_missing(context, 'reminderStr')
+    
+    if reminder_time and reminder_str:
+        # 2016-12-31T08:12:00.000-08:00
+        #date_time = datetime.strptime(reminder_time, "%Y-%m-%dT%H:%M:%S.%f")
+        #current_time = datetime.datetime.now()
+        #delta_time = (date_time - current_time).total_seconds()
+        delta_time = 60
+        job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
+    return context
+
+def delete_missing(context, entity):
+    if context.get(entity) is not None:
+        del context[entity]
+
+# get the value of the first appearance of that entity
+def first_entity_value(entities, entity):
+    if entity not in entities:
+        return None
+    val = entities[entity][0]['value']
+    if not val:
+        return None
+    return val['value'] if isinstance(val, dict) else val
+
+
+
+
+#setup actions
+actions = {
+    'send': send,
+    'addReminder': add_reminder,
+}
+
+
+WIT_TOKEN = os.environ["WIT_TOKEN"]
+client = Wit(access_token=WIT_TOKEN, actions=actions)
