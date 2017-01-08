@@ -1,5 +1,4 @@
 import requests
-import settings
 import os
 #from flask import Flask, request
 

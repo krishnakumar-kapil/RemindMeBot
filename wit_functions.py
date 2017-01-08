@@ -1,5 +1,6 @@
 from wit import Wit
 import os
+import rq_functions
 
 
 def send(request, response):
@@ -36,7 +37,9 @@ def add_reminder(request):
         #current_time = datetime.datetime.now()
         #delta_time = (date_time - current_time).total_seconds()
         delta_time = 60
-        job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
+        log("adding to queue")
+        send_reminder_worker(sender_id, "reminder:" + reminder_str, delta_time)
+#        job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
     return context
 
 def delete_missing(context, entity):

@@ -2,10 +2,7 @@ import os
 import sys
 import json
 #import tz
-from redis import Redis
-#from rq_scheduler import Scheduler
 from datetime import datetime
-from rq import Queue
 
 import requests
 from flask import Flask, request
@@ -87,9 +84,6 @@ def log(message):
 
 
 
-# setup wit client
-redis_conn = Redis()
-q = Queue(connection=redis_conn)
 
 #scheduler = Scheduler(connection=Redis())
 
