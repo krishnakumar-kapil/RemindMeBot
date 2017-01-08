@@ -1,5 +1,6 @@
 import requests
 import os
+from app import log
 #from flask import Flask, request
 
 def fb_message(sender_id, text):
