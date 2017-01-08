@@ -41,18 +41,7 @@ def webhook():
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
                 if messaging_event.get("message"):
-                    #message was sent
-                    sender_id = messaging_event["sender"]["id"]
-                    # recipient id is your fb id
-                    message_text = messaging_event["message"]["text"]
-                    fb_message(sender_id, "received message")
-                    log("message_text_received: "+message_text);
-                    #get the wit to do stuff
-                    if("remind" in message_text):
-                        fb_message(sender_id, "you want a reminder?")
-                    else:
-                        fb_message(sender_id, "not a reminder")
-                    client.run_actions(session_id=sender_id, message=message_text)
+                    receive_message(messaging_event)
                 if messaging_event.get("delivery"):
                     pass
                 if messaging_event.get("optin"):
