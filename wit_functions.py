@@ -1,6 +1,7 @@
 from wit import Wit
 import os
 import rq_functions
+import sys
 
 def send(request, response):
     fb_id = request['session_id']
