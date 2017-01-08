@@ -8,7 +8,7 @@ import requests
 from flask import Flask, request
 from wit import Wit
 
-import wit_functions
+from wit_functions import * 
 from messenger import fb_message, verify_fb
 
 """
