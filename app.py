@@ -9,7 +9,7 @@ from flask import Flask, request
 from wit import Wit
 
 import wit_functions
-import messenger
+from messenger import fb_message
 
 """
 TODO:
