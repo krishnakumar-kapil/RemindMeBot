@@ -30,6 +30,11 @@ def verify_fb(request):
 
     return "Sup", 200
 
+def log(message):
+    print str(message)
+    sys.stdout.flush()
+
+
 
 FB_PAGE_TOKEN = os.environ["FB_PAGE_TOKEN"]
 FB_VERIFY_TOKEN = os.environ["FB_VERIFY_TOKEN"]

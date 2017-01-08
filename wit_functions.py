@@ -1,7 +1,6 @@
 from wit import Wit
 import os
 import rq_functions
-from app import log
 
 def send(request, response):
     fb_id = request['session_id']
@@ -55,6 +54,10 @@ def first_entity_value(entities, entity):
         return None
     return val['value'] if isinstance(val, dict) else val
 
+
+def log(message):
+    print str(message)
+    sys.stdout.flush()
 
 
 
