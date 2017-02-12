@@ -8,8 +8,9 @@ import requests
 from flask import Flask, request
 from wit import Wit
 
-from wit_functions import * 
+from wit_functions import *
 from messenger import fb_message, verify_fb
+
 
 """
 TODO:
@@ -24,11 +25,16 @@ use rq instead
 app = Flask(__name__)
 
 
+@app.route('/test', methods=['GET'])
+    data = request.get_json()
+    message = data.get("message")
+    print(message) 
+
 
 @app.route('/', methods=['GET'])
 def verify():
-    return verify_fb(request)
-    
+    return messenger.verify_fb(request)
+
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
@@ -41,7 +47,7 @@ def webhook():
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
                 if messaging_event.get("message"):
-                    receive_message(messaging_event)
+                    wit_functions.receive_message(messaging_event)
                 if messaging_event.get("delivery"):
                     pass
                 if messaging_event.get("optin"):
@@ -53,17 +59,15 @@ def webhook():
     return "ok", 200
 
 
-
-
 def send(request, response):
     fb_id = request['session_id']
     text = response['text']
-    fb_message(fb_id, "wit: "+ text)
+    messenger.fb_message(fb_id, "wit: "+ text)
 
 
 def send_reminder(sender_id, reminder_message, delta_time):
     sleep(delta_time)
-    fb_message(sender_id, "reminder: "+reminder_message)
+    messenger.fb_message(sender_id, "reminder: "+reminder_message)
 
 
 
