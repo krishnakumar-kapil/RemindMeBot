@@ -31,6 +31,25 @@ def verify():
 
     return "Sup", 200
 
+def fb_message(sender_id, text):
+    # returns the response  back to messenger
+    log("sending message back to {recipient}: {text}".format(recipient=sender_id, text=text))
+
+    params = {"access_token": FB_PAGE_TOKEN}
+    headers = {"Content-Type": "application/json"}
+    data = json.dumps({
+        "recipient": {
+            "id": sender_id
+        },
+        "message": {
+            "text": text
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.5/me/messages",params=params, headers=headers, data=data)
+    if r.status_code != 200:
+        log(r.status_code)
+        log(r.text)
+
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
@@ -76,24 +95,7 @@ def first_entity_value(entities, entity):
     return val['value'] if isinstance(val, dict) else val
 
 
-def fb_message(sender_id, text):
-    # returns the response  back to messenger
-    log("sending message back to {recipient}: {text}".format(recipient=sender_id, text=text))
 
-    params = {"access_token": FB_PAGE_TOKEN}
-    headers = {"Content-Type": "application/json"}
-    data = json.dumps({
-        "recipient": {
-            "id": sender_id
-        },
-        "message": {
-            "text": text
-        }
-    })
-    r = requests.post("https://graph.facebook.com/v2.5/me/messages",params=params, headers=headers, data=data)
-    if r.status_code != 200:
-        log(r.status_code)
-        log(r.text)
 
 
 def send(request, response):
