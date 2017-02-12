@@ -8,8 +8,8 @@ import requests
 from flask import Flask, request
 from wit import Wit
 
-from wit_functions import *
-from messenger import fb_message, verify_fb
+import messenger
+import wit_functions
 
 
 """
@@ -25,10 +25,13 @@ use rq instead
 app = Flask(__name__)
 
 
-@app.route('/test', methods=['GET'])
+@app.route('/test', methods=['POST'])
+def test():
     data = request.get_json()
+    print(data)
     message = data.get("message")
-    print(message) 
+    messenger.fb_message(messenger.MY_ID, message)
+    return message
 
 
 @app.route('/', methods=['GET'])
