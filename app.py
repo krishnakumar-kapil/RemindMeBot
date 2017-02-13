@@ -10,15 +10,18 @@ from wit import Wit
 
 import messenger
 import wit_functions
+import rq_functions
 
 
 """
 TODO:
-timezone first
-based on that do the messages
-implement the messaging queues using celery
-use rq instead
 
+naaah Get wit setup on the test branch
+
+
+Get rq setup
+
+Could just split on the basis of commas
 
 
 """
@@ -30,7 +33,21 @@ def test():
     data = request.get_json()
     print(data)
     message = data.get("message")
-    messenger.fb_message(messenger.MY_ID, message)
+    #timeDelay = data.get("timeDelay")
+    #messenger.fb_message(messenger.MY_ID, "received: "+message)
+
+    #rq_functions.add_to_queue(messenger.MY_ID, "timed: "+message, timeDelay)
+
+    #wit_functions.receive_test(messenger.MY_ID, message)
+
+    # split by .
+    tokens = message.split(".")
+    if tokens[0] == 'r':
+        # reminder
+        message = tokens[1]
+        timeOfReminder = float(tokens[2])
+        rq_functions.add_to_queue(messenger.MY_ID, "timed: "+message, timeOfReminder)
+
     return message
 
 
@@ -85,4 +102,5 @@ def log(message):
 
 if __name__ == '__main__':
     #run server
+    sys.dont_write_bytecode = True
     app.run(debug=True)
