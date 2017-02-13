@@ -4,7 +4,9 @@ import rq_functions
 import sys
 
 import messenger
+import time
 import datetime
+from time import mktime
 
 def send(request, response):
     fb_id = request['session_id']
@@ -40,29 +42,36 @@ def add_reminder(request):
     log("reminder_str: " + reminder_str)
     log("reminder_time: " + reminder_time)
     log("HELLOOOOOOO")
-    if reminder_time:
-        context['reminderTime'] = str(reminder_time)
-        delete_missing(context, 'missingTime')
-    else:
-        context['missingTime'] = True
-        delete_missing(context, 'reminderTime')
+    log(str(context))
+    log(str(entities))
+    # if reminder_time:
+    #     context['reminderTime'] = str(reminder_time)
+    #     delete_missing(context, 'missingTime')
+    # else:
+    #     context['missingTime'] = True
+    #     delete_missing(context, 'reminderTime')
+    #
+    # if reminder_str:
+    #     context['reminderStr'] = reminder_str
+    #     delete_missing(context, 'missingReminderStr')
+    # else:
+    #     context['missingReminderStr'] = True
+    #     delete_missing(context, 'reminderStr')
 
-    if reminder_str:
-        context['reminderStr'] = reminder_str
-        delete_missing(context, 'missingReminderStr')
-    else:
-        context['missingReminderStr'] = True
-        delete_missing(context, 'reminderStr')
-
+    context['reminderTime'] = str(reminder_time)
+    context['reminderStr'] = reminder_str
+    log(str(type(reminder_time)))
     if reminder_time and reminder_str:
         # 2016-12-31T08:12:00.000-08:00
-        #date_time = datetime.strptime(reminder_time, "%Y-%m-%dT%H:%M:%S.%f")
+        reminderTime = time.strptime(reminder_time[:-6], "%Y-%m-%dT%H:%M:%S.%f")
         log("type of reminder_time" + str(type(reminder_time)))
+        #datetime.fromtimestamp(mktime(struct))
+        reminderTime = datetime.datetime.fromtimestamp(mktime(reminderTime))
         current_time = datetime.datetime.now()
-        delta_time = (reminder_time - current_time).total_seconds()
+        delta_time = (reminderTime - current_time).total_seconds()
         #delta_time = 60
-        log("adding to queue in:", delta_time)
-        #rq_functions.add_to_queue(fb_id, "reminder:" + reminder_str, delta_time)
+        log("adding to queue in:" + str(delta_time))
+        rq_functions.add_to_queue(fb_id, "reminder:" + reminder_str, delta_time)
 #        job = q.enqueue(send_reminder, fb_id, reminder_str, delta_time)
     return context
 

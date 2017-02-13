@@ -38,15 +38,15 @@ def test():
 
     #rq_functions.add_to_queue(messenger.MY_ID, "timed: "+message, timeDelay)
 
-    #wit_functions.receive_test(messenger.MY_ID, message)
+    wit_functions.receive_test(messenger.MY_ID, message)
 
     # split by .
-    tokens = message.split(".")
-    if tokens[0] == 'r':
-        # reminder
-        message = tokens[1]
-        timeOfReminder = float(tokens[2])
-        rq_functions.add_to_queue(messenger.MY_ID, "timed: "+message, timeOfReminder)
+    # tokens = message.split(".")
+    # if tokens[0] == 'r':
+    #     # reminder
+    #     message = tokens[1]
+    #     timeOfReminder = float(tokens[2])
+    #     rq_functions.add_to_queue(messenger.MY_ID, "timed: "+message, timeOfReminder)
 
     return message
 
